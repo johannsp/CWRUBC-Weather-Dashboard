@@ -35,7 +35,7 @@ $(document).ready(function() {
     }
     queryObj.q = cityName;
     queryURL += $.param(queryObj);
-    //console.log("queryURL="+queryURL);
+    console.log("queryURL="+queryURL);
     $.ajax({
       url: queryURL,
       method: "GET"
@@ -62,7 +62,7 @@ $(document).ready(function() {
     queryObj.lon = longitude;
     queryObj.lat = latitude;
     queryURL += $.param(queryObj);
-    //console.log("queryURL="+queryURL);
+    console.log("queryURL="+queryURL);
     oneCallData = {empty: true};
     $.ajax({
       url: queryURL,
