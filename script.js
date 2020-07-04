@@ -21,14 +21,14 @@ $(document).ready(function() {
 
   //Test QueryURL:
   //https://api.openweathermap.org/data/2.5/forecast/daily?q=london&cnt=5&units=imperial&appid=38d1fde83d765552ca766073dba8a36d
-  //http: //api.openweathermap.org/data/2.5/weather?q=" + query_param + "&APPID=" + appID;
+  //https: //api.openweathermap.org/data/2.5/weather?q=" + query_param + "&APPID=" + appID;
   //
   function CurrentWeather_WeatherAPI(cityName,isNew) {
     var queryObj = {
       q: "", 
       appid: "38d1fde83d765552ca766073dba8a36d"
     };
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?";
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?";
     weatherData = {empty: true};
     if (!cityName) {
       return;
@@ -58,7 +58,7 @@ $(document).ready(function() {
       units: "imperial",
       appid: "38d1fde83d765552ca766073dba8a36d"
     };
-    var queryURL = "http://api.openweathermap.org/data/2.5/onecall?";
+    var queryURL = "https://api.openweathermap.org/data/2.5/onecall?";
     queryObj.lon = longitude;
     queryObj.lat = latitude;
     queryURL += $.param(queryObj);
@@ -183,7 +183,7 @@ $(document).ready(function() {
       d = oneCallData.daily[i]; // row of data from daily array
       date = moment.unix(d.dt).format("L");
       grid.find(".forecastDate").html(date);
-      image = "http://openweathermap.org/img/wn/"+d.weather[0].icon+".png"
+      image = "https://openweathermap.org/img/wn/"+d.weather[0].icon+".png"
       grid.find(".forecastImage").attr("src",image);
       grid.find(".forecastTemp").html(d.temp.max+' &#176;F');
       grid.find(".forecastHumid").html(d.humidity+'%');
