@@ -23,19 +23,19 @@ $(document).ready(function() {
   //https://api.openweathermap.org/data/2.5/forecast/daily?q=london&cnt=5&units=imperial&appid=38d1fde83d765552ca766073dba8a36d
   //http: //api.openweathermap.org/data/2.5/weather?q=" + query_param + "&APPID=" + appID;
   //
-  function CurrentWeather_WeatherAPI(cityName) {
-    if (!cityName) {
-      return;
-    }
+  function CurrentWeather_WeatherAPI(cityName,isNew) {
     var queryObj = {
       q: "", 
       appid: "38d1fde83d765552ca766073dba8a36d"
     };
     var queryURL = "http://api.openweathermap.org/data/2.5/weather?";
+    weatherData = {empty: true};
+    if (!cityName) {
+      return;
+    }
     queryObj.q = cityName;
     queryURL += $.param(queryObj);
-    console.log("queryURL="+queryURL);
-    weatherData = {empty: true};
+    //console.log("queryURL="+queryURL);
     $.ajax({
       url: queryURL,
       method: "GET"
@@ -45,13 +45,13 @@ $(document).ready(function() {
       //console.log("weatherData\n"+JSON.stringify(response));
       var longitude = response.coord.lon;
       var latitude = response.coord.lat;
-      OneCall_WeatherAPI(longitude,latitude);
+      OneCall_WeatherAPI(longitude,latitude,isNew);
     })
   }
 
   //https://api.openweathermap.org/data/2.5/onecall?lat=33.441792&lon=-94.037689&exclude=hourly,minutely&units=imperial&appid=38d1fde83d765552ca766073dba8a36d
   //
-  function OneCall_WeatherAPI(longitude,latitude) {
+  function OneCall_WeatherAPI(longitude,latitude,isNew) {
     var queryObj = {
       lon: "", 
       lat: "", 
@@ -62,7 +62,7 @@ $(document).ready(function() {
     queryObj.lon = longitude;
     queryObj.lat = latitude;
     queryURL += $.param(queryObj);
-    console.log("queryURL="+queryURL);
+    //console.log("queryURL="+queryURL);
     oneCallData = {empty: true};
     $.ajax({
       url: queryURL,
@@ -73,40 +73,82 @@ $(document).ready(function() {
       //console.log("oneCallData\n"+response);
       renderRightColumn()
       renderForecastGrid();
+      // Only list new searched city if API calls succeed, so do it here.
+      if (isNew) {
+        $("<div>")
+          .addClass("tile box repeatCity")
+          .text(city)
+          .prependTo($("#cityList"));
+      }
     })
   }
 
-  $("#citySearch").on("submit", function(event) {
-    event.preventDefault()
-    city = $("#citySearch").val();
-    if (city) {
-      $("<div>")
-        .addClass("tile box repeatCity")
-        .text(city)
-        .prependTo($("#cityList"));
-      CurrentWeather_WeatherAPI(city);
+  /* {{{ **
+  ** // Somehow enter is forcing a submit despite all attempts set {{{
+  ** // an event handler, so forcibly override this behavior.
+  ** // This advice was found at link:
+  ** // https://www.hashbangcode.com/article/prevent-enter-key-submitting-forms-jquery
+  ** // }}}
+  ** $('form input:not([type="submit"])').on("keydown",function(e) {
+  **   if (e.keyCode == 13) {
+  **       e.preventDefault();
+  **       return false;
+  **   }
+  ** });
+  ** 
+  ** $("#citySearch").on("change", function(event) {
+  **   event.preventDefault()
+  **   event.stopPropagation()
+  **   city = $("#citySearch").val();
+  **   alert('#citySearch change where city='+city);
+  **   if (city) {
+  **     CurrentWeather_WeatherAPI(city,true);
+  **   }
+  ** });
+  ** 
+  ** $("#citySearch").on("submit", function(event) {
+  **   event.preventDefault()
+  **   event.stopPropagation()
+  **   city = $("#citySearch").val();
+  **   alert('#citySearch submit where city='+city);
+  **   if (city) {
+  **     CurrentWeather_WeatherAPI(city,true);
+  **   }
+  ** });
+  ** }}} */
+
+  // Possibly because Bulma frame work wants inputs marked as type text instead
+  // of submit, normal means of attaching an event handler to stop <ENTER> press
+  // on an input from submitting the form seem to fail.  As a work around hook
+  // the key down event and watch for <ENTER>.
+  $("#citySearch").on("keydown", function(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault()
+      event.stopPropagation()
+      city = $("#citySearch").val();
+      if (city) {
+        CurrentWeather_WeatherAPI(city,true);
+      }
     }
   });
 
   $("#search").on("click", function(event) {
-    //event.preventDefault()
+    event.preventDefault()
+    event.stopPropagation()
     city = $("#citySearch").val();
     if (city) {
-      $("<div>")
-        .addClass("tile box repeatCity")
-        .text(city)
-        .prependTo($("#cityList"));
-      CurrentWeather_WeatherAPI(city);
+      CurrentWeather_WeatherAPI(city,true);
     }
   });
 
   $("#cityList").on("click", ".repeatCity", function(event) {
-    //event.preventDefault()
+    event.preventDefault()
+    event.stopPropagation()
     city = $(this).text();
     $("#citySearch").val(city);
     if (city) {
-      $("#cityList").prepend($(this));
-      CurrentWeather_WeatherAPI(city);
+      $("#cityList").prepend($(this)); // Move existing city
+      CurrentWeather_WeatherAPI(city,false);
     }
   });
 
