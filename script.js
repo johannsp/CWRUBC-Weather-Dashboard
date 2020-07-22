@@ -3,6 +3,9 @@ $(document).ready(function() {
   var city = "";
   var weatherData = {empty: true};
   var oneCallData = {empty: true};
+  var lastCall = "";
+  var storedLastCall = null;
+  var storedLastCity = null;
 
   var colorsUVIndex = [
     "green",  // 0 
@@ -69,7 +72,10 @@ $(document).ready(function() {
     })
     .then(function(response) {
       oneCallData = response;
-      //console.log("oneCallData\n"+response);
+      lastCall = JSON.stringify(oneCallData);
+      //console.log("lastData\n"+lastCall);
+      localStorage.setItem("weatherDash_lastCall",lastCall);
+      localStorage.setItem("weatherDash_lastCity",city);
       renderRightColumn()
       renderForecastGrid();
       // Only list new searched city if API calls succeed, so do it here.
@@ -189,5 +195,20 @@ $(document).ready(function() {
     }
   }
 
+  storedLastCall = localStorage.getItem("weatherDash_lastCall");
+  if (storedLastCall !== null) {
+    //console.log("storedLastCall\n"+storedLastCall);
+    oneCallData = JSON.parse(storedLastCall);
+  }
+  storedLastCity = localStorage.getItem("weatherDash_lastCity");
+  if (storedLastCity !== null) {
+    city = storedLastCity;
+    // Only list last searched city on reload.
+    $("<div>")
+      .addClass("tile box repeatCity")
+      .text(city)
+      .prependTo($("#cityList"));
+  }
   renderRightColumn();
+  renderForecastGrid();
 });
