@@ -1,10 +1,10 @@
 # CWRUBC-Weather-Dashboard
 A weather dashboard for planning purposes powered by OpenWeather API
 
-##Link:
+## Link:
 https://johannsp.github.io/CWRUBC-Weather-Dashboard/
 
-##Preview:
+## Preview:
 [![Weather-Dashboard-website-preview.png](https://i.postimg.cc/qR8cC0QG/Weather-Dashboard-website-preview.png)](https://postimg.cc/YGCLJ554)
 
 On submission of a city name, weather information is retrieved both for today
